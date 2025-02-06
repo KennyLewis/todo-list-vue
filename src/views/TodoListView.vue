@@ -13,12 +13,18 @@
 </template>
 
 <script lang="ts">
-const initialTodoItems = [
+interface TodoItem {
+  id: number
+  title: string
+  completed: boolean
+}
+
+
+const initialTodoItems: TodoItem[] = [
   { id: 1, title: 'Learn Vue 3', completed: false },
   { id: 2, title: 'Learn React', completed: true },
   { id: 3, title: 'Build a project', completed: false },
 ]
-
 export default {
   name: 'TodoListView',
   data() {
@@ -35,7 +41,16 @@ export default {
     },
     deleteTodo(id: number) {
       this.todoItems = this.todoItems.filter((todo) => todo.id !== id)
-    }
+    },
+    getLocalStorage() {
+      const todoItems = localStorage.getItem('todoItems')
+      if (todoItems) {
+        this.todoItems = JSON.parse(todoItems)
+      }
+    },
+    saveLocalStorage() {
+      localStorage.setItem('todoItems', JSON.stringify(this.todoItems))
+    },
   },
 }
 </script>
