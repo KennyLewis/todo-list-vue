@@ -19,7 +19,6 @@ interface TodoItem {
   completed: boolean
 }
 
-
 const initialTodoItems: TodoItem[] = [
   { id: 1, title: 'Learn Vue 3', completed: false },
   { id: 2, title: 'Learn React', completed: true },
@@ -28,25 +27,30 @@ const initialTodoItems: TodoItem[] = [
 export default {
   name: 'TodoListView',
   data() {
+    const todoItems = this.getLocalStorage() as TodoItem[];
     return {
-      todoItems: initialTodoItems,
+      todoItems: todoItems
     }
   },
   methods: {
     toggleCompleted(id: number) {
-      const todo = this.todoItems.find((todo) => todo.id === id)
+      const todo = this.todoItems.find((todoItem) => todoItem.id === id)
       if (todo) {
         todo.completed = !todo.completed
       }
+      this.saveLocalStorage();
     },
     deleteTodo(id: number) {
-      this.todoItems = this.todoItems.filter((todo) => todo.id !== id)
+      this.todoItems = this.todoItems.filter((todoItem) => todoItem.id !== id);
+      this.saveLocalStorage();
     },
-    getLocalStorage() {
+    getLocalStorage(): TodoItem[] {
       const todoItems = localStorage.getItem('todoItems')
       if (todoItems) {
-        this.todoItems = JSON.parse(todoItems)
+        return JSON.parse(todoItems);
       }
+
+      return initialTodoItems;
     },
     saveLocalStorage() {
       localStorage.setItem('todoItems', JSON.stringify(this.todoItems))
