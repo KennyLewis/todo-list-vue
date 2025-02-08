@@ -10,6 +10,7 @@
         <button @click="deleteTodoItem(todoItem.id)">Delete</button>
       </li>
     </ul>
+    <button @click="deleteCompletedTodoItems()">Delete Completed Todo Items</button>
   </div>
 </template>
 
@@ -53,6 +54,10 @@ export default {
     },
     deleteTodoItem(id: string) {
       this.todoItems = this.todoItems.filter((todoItem) => todoItem.id !== id);
+      this.saveLocalStorage();
+    },
+    deleteCompletedTodoItems() {
+      this.todoItems = this.todoItems.filter((todoInput) => !todoInput.completed);
       this.saveLocalStorage();
     },
     toggleCompleted(id: string) {
