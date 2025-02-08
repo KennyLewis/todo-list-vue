@@ -1,47 +1,65 @@
 <template>
   <div>
     <h1>Todo List</h1>
-    <input class="form-control" type="text" placeholder="Add Todo" />
+    <input type="text" v-model="todoInput" @keyup.enter="addTodoItem(todoInput)" />
+    <button @click="addTodoItem(todoInput)">Add</button>
     <ul class="mt-2">
       <li v-for="todoItem in todoItems" :key="todoItem.id">
         <input type="checkbox" :id="todoItem.id" v-model="todoItem.completed" @click="toggleCompleted(todoItem.id)" />
         <label for="todo.id" :class="{ strikethrough: todoItem.completed }">{{ todoItem.title }}</label>
-        <button @click="deleteTodo(todoItem.id)">Delete</button>
+        <button @click="deleteTodoItem(todoItem.id)">Delete</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
+
+import { v4 as uuidv4 } from 'uuid';
+
 interface TodoItem {
-  id: number
+  id: string
   title: string
   completed: boolean
 }
 
 const initialTodoItems: TodoItem[] = [
-  { id: 1, title: 'Learn Vue 3', completed: false },
-  { id: 2, title: 'Learn React', completed: true },
-  { id: 3, title: 'Build a project', completed: false },
+  { id: uuidv4(), title: 'Learn Vue 3', completed: false },
+  { id: uuidv4(), title: 'Learn React', completed: true },
+  { id: uuidv4(), title: 'Build a project', completed: false },
 ]
+
+const todoInput = '';
+
 export default {
   name: 'TodoListView',
   data() {
     const todoItems = this.getLocalStorage() as TodoItem[];
     return {
+      todoInput: todoInput,
       todoItems: todoItems
     }
   },
   methods: {
-    toggleCompleted(id: number) {
+    addTodoItem(title: string) {
+      if (!title) {
+        return;
+      }
+
+      const id = uuidv4();
+      this.todoItems.push({ id, title, completed: false });
+      this.todoInput = '';
+      this.saveLocalStorage();
+    },
+    deleteTodoItem(id: string) {
+      this.todoItems = this.todoItems.filter((todoItem) => todoItem.id !== id);
+      this.saveLocalStorage();
+    },
+    toggleCompleted(id: string) {
       const todo = this.todoItems.find((todoItem) => todoItem.id === id)
       if (todo) {
         todo.completed = !todo.completed
       }
-      this.saveLocalStorage();
-    },
-    deleteTodo(id: number) {
-      this.todoItems = this.todoItems.filter((todoItem) => todoItem.id !== id);
       this.saveLocalStorage();
     },
     getLocalStorage(): TodoItem[] {
